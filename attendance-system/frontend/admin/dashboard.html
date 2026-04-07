@@ -1,0 +1,418 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard | AttendEase</title>
+    <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+<div class="page">
+    <aside class="sidebar">
+        <h2>AttendEase Admin</h2>
+        <p>Logged in as <span class="js-user-name"></span></p>
+        <div class="nav-links">
+            <a class="active" href="#departments">Departments</a>
+            <a href="#teachers">Teachers</a>
+            <a href="#subjects">Subjects</a>
+            <a href="#students">Students</a>
+        </div>
+        <div style="margin-top: 1rem;">
+            <button class="js-logout-btn danger">Logout</button>
+        </div>
+    </aside>
+
+    <main class="content">
+        <div class="topbar">
+            <div>
+                <h1>Admin Dashboard</h1>
+                <p class="muted">Manage students, teachers, departments, and subject assignments.</p>
+            </div>
+            <span class="badge">Role: <span class="js-user-role" style="margin-left: 0.3rem;"></span></span>
+        </div>
+
+        <div class="card-grid">
+            <section class="card card-half" id="departments">
+                <h3>Departments</h3>
+                <form id="departmentForm">
+                    <div class="form-row">
+                        <input class="form-col-8" name="name" placeholder="Department name" required />
+                        <button class="form-col-4" type="submit">Add Department</button>
+                    </div>
+                </form>
+                <p id="departmentMessage" class="message"></p>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr><th>ID</th><th>Name</th></tr>
+                        </thead>
+                        <tbody id="departmentTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="card card-half" id="teachers">
+                <h3>Teachers</h3>
+                <form id="teacherForm">
+                    <div class="form-row">
+                        <input class="form-col-4" name="username" placeholder="Username" required />
+                        <input class="form-col-4" name="password" type="password" placeholder="Password" required />
+                        <input class="form-col-4" name="name" placeholder="Full name" required />
+                        <input class="form-col-8" name="email" type="email" placeholder="Email" required />
+                        <button class="form-col-4" type="submit">Add Teacher</button>
+                    </div>
+                </form>
+                <p id="teacherMessage" class="message"></p>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr><th>ID</th><th>Name</th><th>Username</th><th>Email</th></tr>
+                        </thead>
+                        <tbody id="teacherTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="card card-half" id="subjects">
+                <h3>Subjects</h3>
+                <form id="subjectForm">
+                    <div class="form-row">
+                        <input class="form-col-4" name="name" placeholder="Subject name" required />
+                        <select class="form-col-4" id="subjectDepartment" name="department_id" required></select>
+                        <select class="form-col-4" id="subjectTeacher" name="teacher_id" required></select>
+                        <button class="form-col-4" type="submit">Add Subject</button>
+                    </div>
+                </form>
+                <p id="subjectMessage" class="message"></p>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr><th>ID</th><th>Subject</th><th>Department</th><th>Teacher</th></tr>
+                        </thead>
+                        <tbody id="subjectTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="card card-half" id="students">
+                <h3>Students</h3>
+                <form id="studentForm">
+                    <input type="hidden" id="studentId" value="" />
+                    <div class="form-row">
+                        <input class="form-col-3" name="username" placeholder="Username" required />
+                        <input class="form-col-3" name="password" type="password" placeholder="Password" />
+                        <input class="form-col-3" name="name" placeholder="Full name" required />
+                        <input class="form-col-3" name="roll_no" placeholder="Roll number" required />
+                        <input class="form-col-6" name="email" type="email" placeholder="Email" required />
+                        <select class="form-col-3" id="studentDepartment" name="department_id" required></select>
+                        <input class="form-col-1" name="year" type="number" min="1" max="4" placeholder="Year" required />
+                        <input class="form-col-1" name="semester" type="number" min="1" max="8" placeholder="Sem" required />
+                        <input class="form-col-1" name="section" placeholder="Section" required />
+                        <button class="form-col-3" type="submit" id="studentSubmitBtn">Add Student</button>
+                    </div>
+                </form>
+                <div class="button-row" style="margin-top: 0.5rem;">
+                    <button id="studentResetBtn" class="light" type="button">Reset Form</button>
+                </div>
+                <p id="studentMessage" class="message"></p>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Roll No</th>
+                            <th>Department</th>
+                            <th>Year/Sem</th>
+                            <th>Section</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="studentTableBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<script>
+    window.APP_CONFIG = { rootPath: "..", apiBase: "http://localhost:8080" };
+</script>
+<script src="../js/auth.js"></script>
+<script src="../js/attendance.js"></script>
+<script>
+    const departmentForm = document.getElementById("departmentForm");
+    const teacherForm = document.getElementById("teacherForm");
+    const subjectForm = document.getElementById("subjectForm");
+    const studentForm = document.getElementById("studentForm");
+
+    const departmentTableBody = document.getElementById("departmentTableBody");
+    const teacherTableBody = document.getElementById("teacherTableBody");
+    const subjectTableBody = document.getElementById("subjectTableBody");
+    const studentTableBody = document.getElementById("studentTableBody");
+
+    const subjectDepartment = document.getElementById("subjectDepartment");
+    const subjectTeacher = document.getElementById("subjectTeacher");
+    const studentDepartment = document.getElementById("studentDepartment");
+    const studentIdInput = document.getElementById("studentId");
+    const studentSubmitBtn = document.getElementById("studentSubmitBtn");
+    const studentCache = new Map();
+
+    const messageEls = {
+        department: document.getElementById("departmentMessage"),
+        teacher: document.getElementById("teacherMessage"),
+        subject: document.getElementById("subjectMessage"),
+        student: document.getElementById("studentMessage")
+    };
+
+    function showMessage(type, text, isError = false) {
+        const el = messageEls[type];
+        if (!el) return;
+        el.textContent = text;
+        el.className = isError ? "message error" : "message success";
+    }
+
+    function resetStudentForm() {
+        studentForm.reset();
+        studentIdInput.value = "";
+        studentSubmitBtn.textContent = "Add Student";
+        studentForm.password.required = true;
+    }
+
+    function renderDepartments(rows) {
+        departmentTableBody.innerHTML = rows.map((row) => `
+            <tr>
+                <td>${row.id}</td>
+                <td>${row.name}</td>
+            </tr>
+        `).join("");
+    }
+
+    function renderTeachers(rows) {
+        teacherTableBody.innerHTML = rows.map((row) => `
+            <tr>
+                <td>${row.id}</td>
+                <td>${row.name}</td>
+                <td>${row.username}</td>
+                <td>${row.email}</td>
+            </tr>
+        `).join("");
+    }
+
+    function renderSubjects(rows) {
+        subjectTableBody.innerHTML = rows.map((row) => `
+            <tr>
+                <td>${row.id}</td>
+                <td>${row.name}</td>
+                <td>${row.department_name}</td>
+                <td>${row.teacher_name || "Unassigned"}</td>
+            </tr>
+        `).join("");
+    }
+
+    function renderStudents(rows) {
+        studentCache.clear();
+        rows.forEach((row) => {
+            studentCache.set(String(row.id), row);
+        });
+
+        studentTableBody.innerHTML = rows.map((row) => `
+            <tr>
+                <td>${row.id}</td>
+                <td>${row.name}</td>
+                <td>${row.roll_no}</td>
+                <td>${row.department_name}</td>
+                <td>${row.year}/${row.semester}</td>
+                <td>${row.section}</td>
+                <td>${row.email}</td>
+                <td>
+                    <div class="button-row">
+                        <button class="light" type="button" data-edit-id="${row.id}">Edit</button>
+                        <button class="danger" type="button" data-delete="${row.id}">Delete</button>
+                    </div>
+                </td>
+            </tr>
+        `).join("");
+
+        studentTableBody.querySelectorAll("button[data-edit-id]").forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const row = studentCache.get(btn.getAttribute("data-edit-id"));
+                if (!row) {
+                    return;
+                }
+                studentIdInput.value = row.id;
+                studentForm.username.value = row.username;
+                studentForm.password.value = "";
+                studentForm.password.required = false;
+                studentForm.name.value = row.name;
+                studentForm.email.value = row.email;
+                studentForm.roll_no.value = row.roll_no;
+                studentForm.department_id.value = String(row.department_id);
+                studentForm.year.value = row.year;
+                studentForm.semester.value = row.semester;
+                studentForm.section.value = row.section;
+                studentSubmitBtn.textContent = "Update Student";
+                window.scrollTo({ top: studentForm.offsetTop - 30, behavior: "smooth" });
+            });
+        });
+
+        studentTableBody.querySelectorAll("button[data-delete]").forEach((btn) => {
+            btn.addEventListener("click", async () => {
+                const id = btn.getAttribute("data-delete");
+                if (!confirm("Delete this student account?")) {
+                    return;
+                }
+                try {
+                    await Auth.apiFetch(`/api/students/${id}`, { method: "DELETE" });
+                    showMessage("student", "Student deleted successfully.");
+                    await refreshAllTables();
+                } catch (error) {
+                    showMessage("student", error.message, true);
+                }
+            });
+        });
+    }
+
+    async function refreshAllTables() {
+        const [departments, teachers, subjects, students] = await Promise.all([
+            Auth.apiFetch("/api/departments"),
+            Auth.apiFetch("/api/teachers"),
+            Auth.apiFetch("/api/subjects"),
+            Auth.apiFetch("/api/students")
+        ]);
+
+        renderDepartments(departments);
+        renderTeachers(teachers);
+        renderSubjects(subjects);
+        renderStudents(students);
+
+        await AttendanceAPI.loadDepartments(subjectDepartment, true);
+        await AttendanceAPI.loadDepartments(studentDepartment, true);
+        await AttendanceAPI.loadTeachers(subjectTeacher, true);
+    }
+
+    departmentForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        try {
+            await Auth.apiFetch("/api/departments", {
+                method: "POST",
+                body: JSON.stringify({ name: departmentForm.name.value.trim() })
+            });
+            departmentForm.reset();
+            showMessage("department", "Department created successfully.");
+            await refreshAllTables();
+        } catch (error) {
+            showMessage("department", error.message, true);
+        }
+    });
+
+    teacherForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        try {
+            await Auth.apiFetch("/api/teachers", {
+                method: "POST",
+                body: JSON.stringify({
+                    username: teacherForm.username.value.trim(),
+                    password: teacherForm.password.value,
+                    name: teacherForm.name.value.trim(),
+                    email: teacherForm.email.value.trim()
+                })
+            });
+            teacherForm.reset();
+            showMessage("teacher", "Teacher added successfully.");
+            await refreshAllTables();
+        } catch (error) {
+            showMessage("teacher", error.message, true);
+        }
+    });
+
+    subjectForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        try {
+            await Auth.apiFetch("/api/subjects", {
+                method: "POST",
+                body: JSON.stringify({
+                    name: subjectForm.name.value.trim(),
+                    department_id: Number(subjectForm.department_id.value),
+                    teacher_id: Number(subjectForm.teacher_id.value)
+                })
+            });
+            subjectForm.reset();
+            showMessage("subject", "Subject created and assigned successfully.");
+            await refreshAllTables();
+        } catch (error) {
+            showMessage("subject", error.message, true);
+        }
+    });
+
+    studentForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const payload = {
+            username: studentForm.username.value.trim(),
+            name: studentForm.name.value.trim(),
+            email: studentForm.email.value.trim(),
+            roll_no: studentForm.roll_no.value.trim(),
+            department_id: Number(studentForm.department_id.value),
+            year: Number(studentForm.year.value),
+            semester: Number(studentForm.semester.value),
+            section: studentForm.section.value.trim()
+        };
+
+        const editingId = studentIdInput.value;
+
+        if (editingId) {
+            if (studentForm.password.value.trim()) {
+                payload.password = studentForm.password.value;
+            }
+
+            try {
+                await Auth.apiFetch(`/api/students/${editingId}`, {
+                    method: "PUT",
+                    body: JSON.stringify(payload)
+                });
+                showMessage("student", "Student updated successfully.");
+                resetStudentForm();
+                await refreshAllTables();
+            } catch (error) {
+                showMessage("student", error.message, true);
+            }
+            return;
+        }
+
+        payload.password = studentForm.password.value;
+
+        try {
+            await Auth.apiFetch("/api/students", {
+                method: "POST",
+                body: JSON.stringify(payload)
+            });
+            showMessage("student", "Student created successfully.");
+            resetStudentForm();
+            await refreshAllTables();
+        } catch (error) {
+            showMessage("student", error.message, true);
+        }
+    });
+
+    document.getElementById("studentResetBtn").addEventListener("click", resetStudentForm);
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        const user = Auth.requireAuth(["ADMIN"]);
+        if (!user) {
+            return;
+        }
+
+        resetStudentForm();
+
+        try {
+            await refreshAllTables();
+        } catch (error) {
+            showMessage("department", error.message, true);
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,305 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HOD Dashboard | AttendEase</title>
+    <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+<div class="page">
+    <aside class="sidebar">
+        <h2>AttendEase HOD</h2>
+        <p><span class="js-user-name"></span> (<span class="js-user-role"></span>)</p>
+        <div class="nav-links">
+            <a class="active" href="#deptReport">Department Report</a>
+            <a href="#subjectSummary">Subject Summary</a>
+            <a href="#lowAttendance">Below 75%</a>
+        </div>
+        <div style="margin-top: 1rem;">
+            <button class="js-logout-btn danger">Logout</button>
+        </div>
+    </aside>
+
+    <main class="content">
+        <div class="topbar">
+            <div>
+                <h1>HOD / Principal Dashboard</h1>
+                <p class="muted">Department-wise monitoring and attendance compliance overview.</p>
+            </div>
+        </div>
+
+        <div class="card-grid">
+            <section class="card" id="deptReport">
+                <h3>Department-wise Monthly Report</h3>
+                <div class="form-row">
+                    <select class="form-col-4" id="departmentFilter"></select>
+                    <input class="form-col-4" id="monthFilter" type="month" />
+                    <button class="form-col-4" type="button" id="loadDeptReportBtn">Load Report</button>
+                </div>
+                <div class="table-wrap" style="margin-top: 0.9rem;">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Department</th>
+                            <th>Year/Sem</th>
+                            <th>Section</th>
+                            <th>Subject</th>
+                            <th>Total</th>
+                            <th>Attended</th>
+                            <th>Percentage</th>
+                        </tr>
+                        </thead>
+                        <tbody id="departmentReportBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="card card-half" id="subjectSummary">
+                <h3>Subject-wise Summary</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Total</th>
+                            <th>Attended</th>
+                            <th>Percentage</th>
+                        </tr>
+                        </thead>
+                        <tbody id="subjectSummaryBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="card card-half">
+                <h3>Semester-wise Summary</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Year/Sem</th>
+                            <th>Total</th>
+                            <th>Attended</th>
+                            <th>Percentage</th>
+                        </tr>
+                        </thead>
+                        <tbody id="semesterSummaryBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="card" id="lowAttendance">
+                <h3>Students Below Attendance Threshold</h3>
+                <div class="form-row">
+                    <input class="form-col-2" id="thresholdFilter" type="number" min="1" max="100" value="75" />
+                    <button class="form-col-3" id="loadAlertBtn" type="button">Load Alerts</button>
+                    <button class="form-col-3 secondary" id="exportPdfBtn" type="button">Export PDF</button>
+                    <button class="form-col-3 light" id="exportExcelBtn" type="button">Export Excel</button>
+                </div>
+                <p id="alertMessage" class="message"></p>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Roll No</th>
+                            <th>Department</th>
+                            <th>Total</th>
+                            <th>Attended</th>
+                            <th>Percentage</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody id="alertBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<script>
+    window.APP_CONFIG = { rootPath: "..", apiBase: "http://localhost:8080" };
+</script>
+<script src="../js/auth.js"></script>
+<script src="../js/attendance.js"></script>
+<script src="../js/report.js"></script>
+<script>
+    const departmentFilter = document.getElementById("departmentFilter");
+    const monthFilter = document.getElementById("monthFilter");
+    const thresholdFilter = document.getElementById("thresholdFilter");
+
+    const departmentReportBody = document.getElementById("departmentReportBody");
+    const subjectSummaryBody = document.getElementById("subjectSummaryBody");
+    const semesterSummaryBody = document.getElementById("semesterSummaryBody");
+    const alertBody = document.getElementById("alertBody");
+    const alertMessage = document.getElementById("alertMessage");
+
+    let currentMonthlyRows = [];
+
+    function pctClass(value) {
+        return Number(value) < 75 ? "warning-text" : "";
+    }
+
+    function byGroup(rows, keyFn) {
+        const map = new Map();
+        rows.forEach((row) => {
+            const key = keyFn(row);
+            if (!map.has(key)) {
+                map.set(key, { key, total: 0, attended: 0 });
+            }
+            const item = map.get(key);
+            item.total += Number(row.total_classes || 0);
+            item.attended += Number(row.attended_classes || 0);
+        });
+        return Array.from(map.values()).map((item) => ({
+            ...item,
+            percentage: item.total ? ((item.attended * 100) / item.total).toFixed(2) : "0.00"
+        }));
+    }
+
+    function renderDepartmentReport(rows) {
+        departmentReportBody.innerHTML = rows.map((row) => `
+            <tr>
+                <td>${row.department_name}</td>
+                <td>${row.year}/${row.semester}</td>
+                <td>${row.section}</td>
+                <td>${row.subject_name}</td>
+                <td>${row.total_classes}</td>
+                <td>${row.attended_classes}</td>
+                <td class="${pctClass(row.percentage)}">${row.percentage}%</td>
+            </tr>
+        `).join("");
+    }
+
+    function renderSubjectSummary(rows) {
+        const summary = byGroup(rows, (row) => row.subject_name);
+        subjectSummaryBody.innerHTML = summary.map((row) => `
+            <tr>
+                <td>${row.key}</td>
+                <td>${row.total}</td>
+                <td>${row.attended}</td>
+                <td class="${pctClass(row.percentage)}">${row.percentage}%</td>
+            </tr>
+        `).join("");
+    }
+
+    function renderSemesterSummary(rows) {
+        const summary = byGroup(rows, (row) => `${row.year}/${row.semester}`);
+        semesterSummaryBody.innerHTML = summary.map((row) => `
+            <tr>
+                <td>${row.key}</td>
+                <td>${row.total}</td>
+                <td>${row.attended}</td>
+                <td class="${pctClass(row.percentage)}">${row.percentage}%</td>
+            </tr>
+        `).join("");
+    }
+
+    function renderAlerts(rows, threshold) {
+        alertBody.innerHTML = rows.map((row) => {
+            const pct = Number(row.percentage || 0);
+            return `
+                <tr>
+                    <td>${row.student_name}</td>
+                    <td>${row.roll_no}</td>
+                    <td>${row.department_name}</td>
+                    <td>${row.total_classes}</td>
+                    <td>${row.attended_classes}</td>
+                    <td class="${pctClass(pct)}">${pct}%</td>
+                    <td>${pct < threshold ? '<span class="badge" style="background:#fff7ed;color:#9a3412;">Below Threshold</span>' : '<span class="badge status-present">Safe</span>'}</td>
+                </tr>
+            `;
+        }).join("");
+    }
+
+    async function loadDepartmentReport() {
+        const response = await ReportAPI.getMonthlyReport({
+            department_id: departmentFilter.value,
+            month: monthFilter.value
+        });
+        currentMonthlyRows = response.rows || [];
+        renderDepartmentReport(currentMonthlyRows);
+        renderSubjectSummary(currentMonthlyRows);
+        renderSemesterSummary(currentMonthlyRows);
+    }
+
+    async function loadAlerts() {
+        const threshold = Number(thresholdFilter.value || 75);
+        const response = await ReportAPI.getAlertReport({
+            threshold,
+            department_id: departmentFilter.value
+        });
+        renderAlerts(response.rows || [], threshold);
+        alertMessage.className = "message success";
+        alertMessage.textContent = `${response.rows.length} students found below ${threshold}%.`;
+    }
+
+    document.getElementById("loadDeptReportBtn").addEventListener("click", async () => {
+        try {
+            await loadDepartmentReport();
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+
+    document.getElementById("loadAlertBtn").addEventListener("click", async () => {
+        try {
+            await loadAlerts();
+        } catch (error) {
+            alertMessage.className = "message error";
+            alertMessage.textContent = error.message;
+        }
+    });
+
+    document.getElementById("exportPdfBtn").addEventListener("click", async () => {
+        try {
+            await ReportAPI.exportPdf({
+                threshold: thresholdFilter.value,
+                department_id: departmentFilter.value
+            });
+            alertMessage.className = "message success";
+            alertMessage.textContent = "PDF export completed.";
+        } catch (error) {
+            alertMessage.className = "message error";
+            alertMessage.textContent = error.message;
+        }
+    });
+
+    document.getElementById("exportExcelBtn").addEventListener("click", async () => {
+        try {
+            await ReportAPI.exportExcel({
+                threshold: thresholdFilter.value,
+                department_id: departmentFilter.value
+            });
+            alertMessage.className = "message success";
+            alertMessage.textContent = "Excel export completed.";
+        } catch (error) {
+            alertMessage.className = "message error";
+            alertMessage.textContent = error.message;
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        const user = Auth.requireAuth(["HOD"]);
+        if (!user) {
+            return;
+        }
+
+        monthFilter.value = new Date().toISOString().slice(0, 7);
+
+        try {
+            await AttendanceAPI.loadDepartments(departmentFilter, true);
+            departmentFilter.options[0].textContent = "All Departments";
+
+            await loadDepartmentReport();
+            await loadAlerts();
+        } catch (error) {
+            alertMessage.className = "message error";
+            alertMessage.textContent = error.message;
+        }
+    });
+</script>
+</body>
+</html>

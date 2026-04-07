@@ -1,0 +1,179 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Dashboard | AttendEase</title>
+    <link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+<div class="page">
+    <aside class="sidebar">
+        <h2>AttendEase Student</h2>
+        <p><span class="js-user-name"></span> (<span class="js-user-role"></span>)</p>
+        <div class="nav-links">
+            <a class="active" href="#overview">Overview</a>
+            <a href="#subjects">Subject Attendance</a>
+            <a href="#history">Attendance History</a>
+        </div>
+        <div style="margin-top: 1rem;">
+            <button class="js-logout-btn danger">Logout</button>
+        </div>
+    </aside>
+
+    <main class="content">
+        <div class="topbar">
+            <div>
+                <h1>Student Dashboard</h1>
+                <p class="muted">Track subject-wise attendance and low-attendance warnings.</p>
+            </div>
+            <button id="refreshBtn" class="light" type="button">Refresh</button>
+        </div>
+
+        <div class="card-grid">
+            <section class="card" id="overview">
+                <h3>Overall Attendance</h3>
+                <div class="kpi">
+                    <div class="kpi-item">
+                        <p class="kpi-label">Total Classes</p>
+                        <p class="kpi-value" id="totalClasses">0</p>
+                    </div>
+                    <div class="kpi-item">
+                        <p class="kpi-label">Attended Classes</p>
+                        <p class="kpi-value" id="attendedClasses">0</p>
+                    </div>
+                    <div class="kpi-item">
+                        <p class="kpi-label">Attendance Percentage</p>
+                        <p class="kpi-value" id="overallPercentage">0%</p>
+                    </div>
+                </div>
+                <div id="warningBox" class="alert-box" style="display:none;"></div>
+            </section>
+
+            <section class="card card-half" id="subjects">
+                <h3>Subject-wise Summary</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Subject</th>
+                            <th>Total Classes</th>
+                            <th>Attended</th>
+                            <th>Percentage</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody id="subjectSummaryBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="card card-half" id="history">
+                <h3>Recent Attendance History</h3>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Subject</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody id="historyBody"></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<script>
+    window.APP_CONFIG = { rootPath: "..", apiBase: "http://localhost:8080" };
+</script>
+<script src="../js/auth.js"></script>
+<script src="../js/report.js"></script>
+<script>
+    const totalClassesEl = document.getElementById("totalClasses");
+    const attendedClassesEl = document.getElementById("attendedClasses");
+    const overallPercentageEl = document.getElementById("overallPercentage");
+    const warningBox = document.getElementById("warningBox");
+    const subjectSummaryBody = document.getElementById("subjectSummaryBody");
+    const historyBody = document.getElementById("historyBody");
+
+    function statusBadge(status) {
+        const cls = {
+            Present: "status-present",
+            Absent: "status-absent",
+            Late: "status-late"
+        }[status] || "";
+        return `<span class="badge ${cls}">${status}</span>`;
+    }
+
+    function renderReport(report) {
+        const overall = report.overall || {};
+        const overallPct = Number(overall.percentage || 0);
+
+        totalClassesEl.textContent = overall.total_classes || 0;
+        attendedClassesEl.textContent = overall.attended_classes || 0;
+        overallPercentageEl.textContent = `${overallPct}%`;
+        overallPercentageEl.className = `kpi-value ${overallPct < 75 ? "warning-text" : ""}`;
+
+        const lowSubjects = (report.subject_summary || []).filter((row) => Number(row.percentage) < 75);
+        if (overallPct < 75 || lowSubjects.length > 0) {
+            warningBox.style.display = "block";
+            warningBox.textContent = "Warning: Your attendance is below 75% in one or more subjects. Please improve attendance to avoid eligibility issues.";
+        } else {
+            warningBox.style.display = "none";
+            warningBox.textContent = "";
+        }
+
+        subjectSummaryBody.innerHTML = (report.subject_summary || []).map((row) => {
+            const pct = Number(row.percentage || 0);
+            return `
+                <tr>
+                    <td>${row.subject_name}</td>
+                    <td>${row.total_classes}</td>
+                    <td>${row.attended_classes}</td>
+                    <td class="${pct < 75 ? "warning-text" : ""}">${pct}%</td>
+                    <td>${pct < 75 ? '<span class="badge" style="background:#fff7ed;color:#9a3412;">Below 75%</span>' : '<span class="badge status-present">Safe</span>'}</td>
+                </tr>
+            `;
+        }).join("");
+
+        historyBody.innerHTML = (report.records || []).slice(0, 25).map((row) => `
+            <tr>
+                <td>${row.date}</td>
+                <td>${row.subject_name}</td>
+                <td>${statusBadge(row.status)}</td>
+            </tr>
+        `).join("");
+    }
+
+    async function loadStudentReport() {
+        const report = await ReportAPI.getStudentReport({});
+        renderReport(report);
+    }
+
+    document.getElementById("refreshBtn").addEventListener("click", async () => {
+        try {
+            await loadStudentReport();
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        const user = Auth.requireAuth(["STUDENT"]);
+        if (!user) {
+            return;
+        }
+
+        try {
+            await loadStudentReport();
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+</script>
+</body>
+</html>
