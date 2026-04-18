@@ -2,6 +2,8 @@
     const APP_CONFIG = window.APP_CONFIG || {};
     const API_BASE = APP_CONFIG.apiBase || localStorage.getItem("apiBase") || "http://localhost:8080";
     const ROOT_PATH = APP_CONFIG.rootPath || ".";
+    const LANDING_PAGE = "index.html";
+    const LOGIN_PAGE = "login.html";
 
     function normalizePath(relativePath) {
         const rel = String(relativePath || "").replace(/^\/+/, "");
@@ -23,7 +25,7 @@
             case "HOD":
                 return "hod/dashboard.html";
             default:
-                return "index.html";
+                return LOGIN_PAGE;
         }
     }
 
@@ -101,7 +103,7 @@
 
     function logout() {
         clearSession();
-        window.location.href = normalizePath("index.html");
+        window.location.href = normalizePath(LANDING_PAGE);
     }
 
     function goToDashboard(role) {
@@ -113,7 +115,7 @@
         const user = getCurrentUser();
 
         if (!token || !user) {
-            window.location.href = normalizePath("index.html");
+            window.location.href = normalizePath(LOGIN_PAGE);
             return null;
         }
 

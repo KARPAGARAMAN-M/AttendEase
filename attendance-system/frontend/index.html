@@ -1,35 +1,44 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>AttendEase | Login</title>
+    <title>AttendEase | Welcome</title>
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-<div class="auth-wrapper">
-    <div class="auth-card">
-        <h1 class="auth-title">College Attendance Management</h1>
-        <p class="auth-subtitle">Sign in with your assigned account.</p>
+<div class="welcome-wrapper">
+    <section class="welcome-card">
+        <p class="welcome-kicker">Welcome to AttendEase</p>
+        <h1>College Attendance Management System</h1>
+        <p class="welcome-intro">
+            This platform is used by four main user groups. Choose login to continue with your assigned account.
+        </p>
 
-        <form id="loginForm">
-            <div>
-                <label for="username">Username</label>
-                <input id="username" name="username" type="text" required />
-            </div>
-            <div>
-                <label for="password">Password</label>
-                <input id="password" name="password" type="password" required />
-            </div>
-            <button type="submit">Login</button>
-            <p id="loginMessage" class="message"></p>
-        </form>
-
-        <div class="alert-box" style="margin-top: 1.25rem;">
-            Demo users: <code>admin/admin123</code>, <code>teacher.cse/teacher123</code>,
-            <code>student.cse.001/student123</code>, <code>hod.cse/hod123</code>
+        <div class="welcome-user-grid">
+            <article class="welcome-user-card">
+                <h2>Admin</h2>
+                <p>Manages departments, teachers, subjects, and student accounts.</p>
+            </article>
+            <article class="welcome-user-card">
+                <h2>Teacher / Faculty</h2>
+                <p>Marks attendance, views reports, and exports compliance records.</p>
+            </article>
+            <article class="welcome-user-card">
+                <h2>Student</h2>
+                <p>Tracks attendance percentage, subject history, and warning alerts.</p>
+            </article>
+            <article class="welcome-user-card">
+                <h2>HOD / Principal</h2>
+                <p>Monitors department-level attendance trends and low-attendance students.</p>
+            </article>
         </div>
-    </div>
+
+        <div class="welcome-actions">
+            <a class="welcome-btn primary" href="login.html">Go to Login</a>
+            <a class="welcome-btn light" id="dashboardLink" href="#" style="display:none;">Go to Dashboard</a>
+        </div>
+    </section>
 </div>
 
 <script>
@@ -37,32 +46,13 @@
 </script>
 <script src="js/auth.js"></script>
 <script>
-    const form = document.getElementById("loginForm");
-    const messageEl = document.getElementById("loginMessage");
-
     const existingUser = Auth.getCurrentUser();
+    const dashboardLink = document.getElementById("dashboardLink");
+
     if (Auth.getToken() && existingUser) {
-        Auth.goToDashboard(existingUser.role);
+        dashboardLink.style.display = "inline-flex";
+        dashboardLink.href = Auth.path(Auth.getDashboardPath(existingUser.role));
     }
-
-    form.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        messageEl.className = "message";
-        messageEl.textContent = "Signing in...";
-
-        const username = form.username.value.trim();
-        const password = form.password.value;
-
-        try {
-            const user = await Auth.login(username, password);
-            messageEl.className = "message success";
-            messageEl.textContent = "Login successful. Redirecting...";
-            Auth.goToDashboard(user.role);
-        } catch (error) {
-            messageEl.className = "message error";
-            messageEl.textContent = error.message;
-        }
-    });
 </script>
 </body>
 </html>

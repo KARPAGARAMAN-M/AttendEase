@@ -58,6 +58,94 @@ a {
     font-size: 0.95rem;
 }
 
+.welcome-wrapper {
+    min-height: 100vh;
+    padding: 2rem;
+    display: grid;
+    place-items: center;
+}
+
+.welcome-card {
+    width: 100%;
+    max-width: 960px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    box-shadow: var(--shadow);
+    padding: 2rem;
+}
+
+.welcome-kicker {
+    margin: 0;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+}
+
+.welcome-card h1 {
+    margin: 0.5rem 0 0;
+    font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+}
+
+.welcome-intro {
+    margin: 0.8rem 0 1.5rem;
+    color: var(--muted-text);
+}
+
+.welcome-user-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
+}
+
+.welcome-user-card {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1rem;
+    background: var(--muted-surface);
+}
+
+.welcome-user-card h2 {
+    margin: 0;
+    font-size: 1.02rem;
+}
+
+.welcome-user-card p {
+    margin: 0.4rem 0 0;
+    color: var(--muted-text);
+    font-size: 0.92rem;
+}
+
+.welcome-actions {
+    margin-top: 1.4rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+}
+
+.welcome-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    padding: 0.65rem 1rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+}
+
+.welcome-btn.primary {
+    background: var(--accent);
+    color: #ffffff;
+}
+
+.welcome-btn.light {
+    background: #eef2f7;
+    color: var(--text);
+    border-color: var(--border);
+}
+
 .page {
     min-height: 100vh;
     display: flex;
@@ -375,6 +463,18 @@ th {
 }
 
 @media (max-width: 860px) {
+    .welcome-wrapper {
+        padding: 1rem;
+    }
+
+    .welcome-card {
+        padding: 1.2rem;
+    }
+
+    .welcome-user-grid {
+        grid-template-columns: 1fr;
+    }
+
     .page {
         flex-direction: column;
     }
