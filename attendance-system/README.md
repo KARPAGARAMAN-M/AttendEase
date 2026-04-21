@@ -1,90 +1,78 @@
-﻿# AttendEase - College Attendance Management System
+# AttendEase (MERN, CSE-Only)
 
-AttendEase is a role-based attendance system with:
-- Frontend: HTML, CSS, Vanilla JavaScript
-- Backend: Java `HttpServer` + JDBC + JSON REST APIs
-- Database: MySQL
+AttendEase is a role-based College Attendance Management System built with MERN:
+- `client/` -> React (Vite)
+- `server/` -> Node.js + Express + MongoDB (Mongoose)
 
-## Roles
-- Admin
-- Teacher / Faculty
-- Student
-- HOD / Principal
+This build is configured for **CSE department only**.
+
+## Roles and Responsibilities
+- Admin: manages CSE users, subjects, schedules, and system operations.
+- Teacher: marks attendance, views reports, exports data, and sends low-attendance alerts.
+- HOD / Principal: monitors trends, reviews faculty activity, approves leave/correction requests, and exports institutional reports.
+- Student: views attendance, receives shortage alerts, and submits leave/correction requests.
 
 ## Default Ports
-- Backend API: `http://localhost:8080`
-- Frontend: serve `frontend/` with any static server (for example `http://localhost:5500`)
+- API server: `http://localhost:8080`
+- React app: `http://localhost:5173`
 
-## 1) Database Setup
-1. Create the schema and seed demo data:
-   ```sql
-   SOURCE path/to/attendance-system/database/schema.sql;
-   ```
-2. Or import directly:
-   ```bash
-   mysql -u root -p < attendance-system/database/schema.sql
-   ```
+## 1) Prerequisites
+- Node.js 18+
+- MongoDB running locally (or a remote MongoDB URI)
 
-## 2) Backend Dependencies
-Copy these jars into `backend/lib/`:
-- `mysql-connector-j-8.x.x.jar`
-- `gson-2.x.x.jar`
-- `itextpdf-5.x.x.jar` (or compatible iText 5 package)
-- `poi-5.x.x.jar`
-- `poi-ooxml-5.x.x.jar`
-- `commons-collections4-4.x.jar`
-- `commons-compress-1.x.jar`
-- `xmlbeans-5.x.jar`
-- `commons-io-2.x.jar`
+## 2) Backend Setup
+From `attendance-system/server`:
 
-## 3) Backend Run
-From `attendance-system/backend`:
-
-PowerShell compile + run example:
-```powershell
-$env:DB_URL="jdbc:mysql://localhost:3306/attendease?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
-$env:DB_USER="root"
-$env:DB_PASSWORD="root"
-
-$cp = ".;lib/*;src"
-javac -cp $cp src/Main.java src/server/AppServer.java src/handlers/*.java src/db/DBConnection.java src/models/*.java src/utils/*.java
-java -cp $cp Main
-```
-
-## 4) Frontend Run
-From `attendance-system/frontend`:
 ```bash
-python -m http.server 5500
+npm install
 ```
-Open: `http://localhost:5500`
 
-## 5) Demo Login Accounts
-- Admin: `admin / admin123`
-- Teacher: `teacher.cse / teacher123`
-- Student: `student.cse.001 / student123`
-- HOD: `hod.cse / hod123`
+Create `.env` from `.env.example`:
 
-## API Summary
-- `POST /api/login`
-- `GET /api/me`
-- `GET /api/students`
-- `POST /api/students`
-- `PUT /api/students/{id}`
-- `DELETE /api/students/{id}`
-- `GET /api/teachers`
-- `POST /api/teachers`
-- `GET /api/subjects`
-- `POST /api/subjects`
-- `GET /api/departments`
-- `POST /api/departments`
-- `POST /api/attendance`
-- `GET /api/attendance/report?student_id=&subject_id=`
-- `GET /api/attendance/monthly?department_id=&month=`
-- `GET /api/attendance/alert?threshold=75`
-- `GET /api/attendance/export/pdf`
-- `GET /api/attendance/export/excel`
+```env
+PORT=8080
+MONGODB_URI=mongodb://127.0.0.1:27017/attendease
+JWT_SECRET=replace_with_a_strong_secret
+JWT_EXPIRES_IN=12h
+CORS_ORIGIN=http://localhost:5173
+```
+
+Seed sample data:
+
+```bash
+npm run seed
+```
+
+Run backend:
+
+```bash
+npm run dev
+```
+
+## 3) Frontend Setup
+From `attendance-system/client`:
+
+```bash
+npm install
+npm run dev
+```
+
+Open: `http://localhost:5173`
+
+`vite.config.js` proxies `/api` to `http://localhost:8080`.
+
+## 4) API Summary
+- Auth: `POST /api/login`, `GET /api/me`
+- Catalog: `GET /api/departments`, `GET/POST /api/teachers`, `GET/POST /api/subjects`
+- Students: `GET/POST /api/students`, `PUT/DELETE /api/students/:id`
+- Attendance: `POST /api/attendance`, `GET /api/attendance`
+- Reports: `GET /api/attendance/report`, `GET /api/attendance/monthly`, `GET /api/attendance/alert`, `GET /api/attendance/export/pdf`, `GET /api/attendance/export/excel`
+- Schedules: `GET/POST /api/schedules`, `PUT/DELETE /api/schedules/:id`
+- Requests: `GET/POST /api/attendance-requests`, `PATCH /api/attendance-requests/:id/review`
+- Notifications: `GET /api/notifications`, `POST /api/notifications/low-attendance`, `PATCH /api/notifications/:id/read`
+- Management: `GET /api/faculty/activity`
 
 ## Notes
-- Demo build uses plain-text passwords for local development convenience.
-- Attendance percentage counts both `Present` and `Late` as attended classes.
-- All backend JSON routes include CORS headers for frontend integration.
+- Passwords are hashed using `bcryptjs`.
+- Attendance percentage treats `Present` and `Late` as attended.
+- CSE-only validation is enforced in backend APIs.

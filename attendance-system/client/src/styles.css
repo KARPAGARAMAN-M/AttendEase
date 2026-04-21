@@ -1,0 +1,1118 @@
+/* ================================================================
+   AttendEase – Design System
+   The Kavery Engineering College (Autonomous), Mecheri
+   ================================================================ */
+
+/* ── Palette inspired by the TKEC logo ── */
+:root {
+  /* Core brand palette (from shield quadrants) */
+  --tkec-navy:    #0a2463;
+  --tkec-blue:    #1e56a0;
+  --tkec-green:   #157145;
+  --tkec-gold:    #d4a017;
+  --tkec-maroon:  #8b1a2b;
+  --tkec-red:     #c62828;
+
+  /* Surface & text */
+  --bg:            #f5f7fa;
+  --surface:       #ffffff;
+  --muted-surface: #f8fafc;
+  --text:          #1a1d23;
+  --muted-text:    #5a6478;
+  --border:        #dce3ed;
+  --shadow:        0 10px 32px rgba(10, 36, 99, 0.07);
+
+  /* Accent (teal-green, kept from original for dashboard pages) */
+  --accent:        #0f766e;
+  --accent-soft:   #dff5f2;
+
+  /* Feedback */
+  --danger:  #c81e1e;
+  --warning: #b45309;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: var(--text);
+  background: var(--bg);
+  font-family: "Inter", "Segoe UI", Tahoma, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ================================================================
+   WELCOME PAGE – Full Landing Experience
+   ================================================================ */
+
+/* ── Wrapper ── */
+.welcome-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.55s cubic-bezier(0.23, 1, 0.32, 1),
+              transform 0.55s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.welcome-wrapper.welcome-loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Navbar ── */
+.welcome-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px) saturate(1.6);
+  -webkit-backdrop-filter: blur(14px) saturate(1.6);
+  border-bottom: 1px solid rgba(10, 36, 99, 0.06);
+  box-shadow: 0 1px 3px rgba(10, 36, 99, 0.04);
+}
+
+.navbar-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0.65rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.navbar-logo {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+  border-radius: 10px;
+  border: 1.5px solid rgba(10, 36, 99, 0.08);
+  padding: 2px;
+  background: #fff;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  flex-shrink: 0;
+}
+
+.navbar-logo:hover {
+  transform: scale(1.06);
+  box-shadow: 0 4px 14px rgba(10, 36, 99, 0.12);
+}
+
+.navbar-college-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+}
+
+.navbar-college-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--tkec-navy);
+  letter-spacing: -0.01em;
+}
+
+.navbar-college-tag {
+  font-size: 0.72rem;
+  color: var(--muted-text);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-portal-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--tkec-blue);
+  background: linear-gradient(135deg, rgba(30, 86, 160, 0.07), rgba(21, 113, 69, 0.07));
+  padding: 0.38rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(30, 86, 160, 0.12);
+}
+
+/* ── Hero Section ── */
+.welcome-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 3.5rem 1.5rem 2.5rem;
+  overflow: hidden;
+  background: linear-gradient(175deg,
+    #ffffff 0%,
+    #f0f4fa 25%,
+    #eaf0f8 45%,
+    #e6f0ec 65%,
+    #f5f7fa 100%
+  );
+}
+
+.hero-bg-pattern {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(10, 36, 99, 0.025) 0%, transparent 55%),
+    radial-gradient(circle at 82% 78%, rgba(21, 113, 69, 0.02) 0%, transparent 55%),
+    radial-gradient(circle at 50% 0%, rgba(212, 160, 23, 0.015) 0%, transparent 45%);
+}
+
+/* ── Hero Logo ── */
+.hero-logo-block {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 1.5rem;
+}
+
+.hero-logo-ring {
+  width: 120px;
+  height: 120px;
+  border-radius: 28px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 0 0 4px rgba(10, 36, 99, 0.05),
+    0 0 0 12px rgba(10, 36, 99, 0.02),
+    0 12px 40px rgba(10, 36, 99, 0.1);
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1),
+              box-shadow 0.4s ease;
+}
+
+.hero-logo-ring:hover {
+  transform: scale(1.04) translateY(-2px);
+  box-shadow:
+    0 0 0 4px rgba(10, 36, 99, 0.08),
+    0 0 0 14px rgba(10, 36, 99, 0.03),
+    0 18px 50px rgba(10, 36, 99, 0.14);
+}
+
+.hero-logo {
+  width: 92px;
+  height: 92px;
+  object-fit: contain;
+  border-radius: 18px;
+}
+
+/* ── Hero Text ── */
+.hero-text-block {
+  position: relative;
+  z-index: 1;
+  max-width: 640px;
+}
+
+.hero-institution-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tkec-blue);
+  margin-bottom: 0.65rem;
+}
+
+.hero-title {
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(1.85rem, 4vw, 2.8rem);
+  font-weight: 800;
+  line-height: 1.18;
+  color: var(--tkec-navy);
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+  font-size: 1.05rem;
+  color: var(--muted-text);
+  line-height: 1.65;
+  max-width: 520px;
+  margin: 0 auto 1.2rem;
+}
+
+.hero-motto {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--tkec-gold);
+  background: linear-gradient(135deg, rgba(212, 160, 23, 0.08), rgba(212, 160, 23, 0.03));
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+  border: 1px solid rgba(212, 160, 23, 0.15);
+  letter-spacing: 0.05em;
+}
+
+.motto-icon {
+  font-size: 0.7rem;
+}
+
+/* ── Role Selection Section ── */
+.welcome-roles-section {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 1.5rem 1.5rem 2.5rem;
+  width: 100%;
+}
+
+.roles-heading-label {
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--muted-text);
+  margin-bottom: 1.25rem;
+}
+
+.welcome-user-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* ── Role Card ── */
+.welcome-user-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.35rem;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition:
+    transform 0.22s cubic-bezier(0.23, 1, 0.32, 1),
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.welcome-user-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(10, 36, 99, 0.1);
+}
+
+.welcome-user-card:active {
+  transform: translateY(-1px);
+}
+
+.welcome-user-card:focus-visible {
+  outline: 3px solid var(--tkec-blue);
+  outline-offset: 2px;
+}
+
+/* Icon wrapper */
+.role-card-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.25s ease;
+}
+
+.welcome-user-card:hover .role-card-icon-wrap {
+  transform: scale(1.08);
+}
+
+.role-card-icon {
+  font-size: 1.4rem;
+}
+
+/* Colors per role */
+.role-admin-bg  { background: linear-gradient(135deg, #ffe5e5, #fff0f0); }
+.role-teacher-bg{ background: linear-gradient(135deg, #dbeafe, #eff6ff); }
+.role-student-bg{ background: linear-gradient(135deg, #dcfce7, #f0fdf4); }
+.role-hod-bg    { background: linear-gradient(135deg, #fef3c7, #fffbeb); }
+
+.welcome-user-card.role-admin:hover  { border-color: #fca5a5; }
+.welcome-user-card.role-teacher:hover{ border-color: #93c5fd; }
+.welcome-user-card.role-student:hover{ border-color: #86efac; }
+.welcome-user-card.role-hod:hover    { border-color: #fcd34d; }
+
+/* Card body */
+.role-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.role-card-body h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.25rem;
+}
+
+.role-card-body p {
+  font-size: 0.87rem;
+  color: var(--muted-text);
+  line-height: 1.5;
+}
+
+/* Arrow */
+.role-arrow {
+  font-size: 1.15rem;
+  color: var(--border);
+  transition: color 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.welcome-user-card:hover .role-arrow {
+  color: var(--tkec-blue);
+  transform: translateX(3px);
+}
+
+/* ── Footer ── */
+.welcome-footer {
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  background: var(--muted-surface);
+  padding: 1.35rem 1.5rem;
+}
+
+.footer-inner {
+  max-width: 1160px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.footer-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 8px;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.footer-text p {
+  font-size: 0.78rem;
+  color: var(--muted-text);
+  line-height: 1.45;
+}
+
+.footer-sub {
+  font-size: 0.72rem !important;
+  opacity: 0.7;
+}
+
+/* ================================================================
+   RESPONSIVE – Welcome Page
+   ================================================================ */
+
+@media (max-width: 860px) {
+  .welcome-wrapper {
+    /* inherits flex column */
+  }
+
+  .navbar-inner {
+    padding: 0.55rem 1rem;
+  }
+
+  .navbar-logo {
+    width: 38px;
+    height: 38px;
+  }
+
+  .navbar-college-name {
+    font-size: 0.88rem;
+  }
+
+  .navbar-college-tag {
+    font-size: 0.68rem;
+  }
+
+  .navbar-portal-label {
+    display: none;
+  }
+
+  .welcome-hero {
+    padding: 2.5rem 1rem 2rem;
+  }
+
+  .hero-logo-ring {
+    width: 100px;
+    height: 100px;
+  }
+
+  .hero-logo {
+    width: 76px;
+    height: 76px;
+  }
+
+  .hero-institution-label {
+    font-size: 0.72rem;
+  }
+
+  .hero-title {
+    font-size: clamp(1.4rem, 5vw, 2rem);
+  }
+
+  .hero-subtitle {
+    font-size: 0.92rem;
+  }
+
+  .welcome-user-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .welcome-roles-section {
+    padding: 1rem 1rem 2rem;
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .navbar-college-tag {
+    display: none;
+  }
+
+  .hero-logo-ring {
+    width: 86px;
+    height: 86px;
+    border-radius: 22px;
+  }
+
+  .hero-logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+  }
+
+  .welcome-user-card {
+    padding: 1.05rem 1rem;
+  }
+
+  .role-card-icon-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+}
+
+/* ================================================================
+   AUTH PAGES (Login)
+   ================================================================ */
+
+.auth-wrapper {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background: radial-gradient(circle at top right, #e8f5ff 0%, var(--bg) 55%);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 430px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 2rem;
+}
+
+.auth-title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.auth-subtitle {
+  margin: 0.5rem 0 1rem;
+  color: var(--muted-text);
+  font-size: 0.95rem;
+}
+
+.selected-role-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--muted-surface);
+}
+
+.selected-role-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted-text);
+  font-weight: 600;
+}
+
+.selected-role-value {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.selected-role-banner.role-admin {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #b91c1c;
+}
+
+.selected-role-banner.role-teacher {
+  background: #ecfeff;
+  border-color: #bae6fd;
+  color: #0369a1;
+}
+
+.selected-role-banner.role-student {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #166534;
+}
+
+.selected-role-banner.role-hod {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #b45309;
+}
+
+.login-hint {
+  display: grid;
+  gap: 0.55rem;
+  margin-bottom: 1rem;
+  padding: 0.95rem 1rem;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 15px;
+}
+
+/* ================================================================
+   DASHBOARD LAYOUT
+   ================================================================ */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+}
+
+.sidebar {
+  width: 260px;
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+  border-right: 1px solid var(--border);
+  padding: 1.5rem 1rem;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebar h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.sidebar p {
+  margin: 0.4rem 0 1.25rem;
+  color: var(--muted-text);
+  font-size: 0.85rem;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.nav-links a {
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  color: var(--muted-text);
+  font-size: 0.92rem;
+  border: 1px solid transparent;
+}
+
+.nav-links a:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-color: #b9ebe5;
+}
+
+.content {
+  flex: 1;
+  padding: 1.25rem 1.25rem 2rem;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.muted {
+  color: var(--muted-text);
+}
+
+/* ================================================================
+   CARDS & GRID
+   ================================================================ */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  grid-column: span 12;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  padding: 1rem;
+}
+
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  font-size: 1.02rem;
+}
+
+.card-half {
+  grid-column: span 6;
+}
+
+/* ================================================================
+   FORMS
+   ================================================================ */
+
+form {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.form-row > * {
+  grid-column: span 12;
+}
+
+.form-col-1  { grid-column: span 1;  }
+.form-col-2  { grid-column: span 2;  }
+.form-col-3  { grid-column: span 3;  }
+.form-col-4  { grid-column: span 4;  }
+.form-col-6  { grid-column: span 6;  }
+.form-col-8  { grid-column: span 8;  }
+
+input,
+select,
+button,
+textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.62rem 0.7rem;
+  font: inherit;
+  color: var(--text);
+  background: #fff;
+}
+
+button {
+  background: var(--accent);
+  color: #fff;
+  border: 0;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
+
+button.secondary {
+  background: #1e293b;
+}
+
+button.light {
+  background: #eef2f7;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+button.danger {
+  background: var(--danger);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.button-row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+/* ================================================================
+   TABLES
+   ================================================================ */
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.62rem 0.58rem;
+  border-bottom: 1px solid #edf2f7;
+  vertical-align: top;
+}
+
+th {
+  background: #f7fafc;
+  color: #334155;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ================================================================
+   ATTENDANCE CONTROLS
+   ================================================================ */
+
+.attendance-bulk-actions {
+  margin: 0.7rem 0 0.35rem;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.bulk-label {
+  color: var(--muted-text);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.bulk-status-btn {
+  width: auto;
+  border-radius: 999px;
+  padding: 0.42rem 0.85rem;
+  border: 1px solid transparent;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.bulk-status-btn:hover {
+  transform: none;
+  opacity: 1;
+}
+
+.bulk-status-btn.present {
+  background: #f0fdf4;
+  color: #166534;
+  border-color: #86efac;
+}
+
+.bulk-status-btn.absent {
+  background: #fef2f2;
+  color: #991b1b;
+  border-color: #fca5a5;
+}
+
+.bulk-status-btn.late {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fcd34d;
+}
+
+.bulk-shortcut-hint {
+  margin: 0 0 0.65rem;
+  color: var(--muted-text);
+  font-size: 0.8rem;
+}
+
+.attendance-mark-table th,
+.attendance-mark-table td {
+  vertical-align: middle;
+  padding-top: 0.68rem;
+  padding-bottom: 0.68rem;
+}
+
+.attendance-status-cell {
+  min-width: 270px;
+}
+
+.attendance-status-control {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.38rem;
+}
+
+.status-segment {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.05rem;
+  border-radius: 0.62rem;
+  border: 1px solid var(--border);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.16s ease, background-color 0.16s ease, color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.status-segment input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.status-segment span {
+  pointer-events: none;
+}
+
+.status-segment:focus-within {
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.24);
+}
+
+.status-segment-present {
+  background: #f0fdf4;
+  border-color: #86efac;
+  color: #166534;
+}
+
+.status-segment-absent {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #991b1b;
+}
+
+.status-segment-late {
+  background: #fffbeb;
+  border-color: #fcd34d;
+  color: #b45309;
+}
+
+.status-segment-present.active {
+  background: #16a34a;
+  border-color: #15803d;
+  color: #ffffff;
+}
+
+.status-segment-absent.active {
+  background: #dc2626;
+  border-color: #b91c1c;
+  color: #ffffff;
+}
+
+.status-segment-late.active {
+  background: #d97706;
+  border-color: #b45309;
+  color: #ffffff;
+}
+
+/* ================================================================
+   BADGES & FEEDBACK
+   ================================================================ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 68px;
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.status-present {
+  color: #06603a;
+  background: #dcfce7;
+}
+
+.status-absent {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.status-late {
+  color: #9a4f06;
+  background: #fef3c7;
+}
+
+.warning-text {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+.alert-box {
+  border: 1px solid #fdba74;
+  background: #fff7ed;
+  color: #9a3412;
+  border-radius: 10px;
+  padding: 0.8rem;
+  margin-top: 0.8rem;
+}
+
+.message {
+  margin-top: 0.6rem;
+  font-size: 0.9rem;
+  color: var(--muted-text);
+}
+
+.message.error {
+  color: #b91c1c;
+}
+
+.message.success {
+  color: #0f766e;
+}
+
+/* ================================================================
+   KPI CARDS
+   ================================================================ */
+
+.kpi {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.kpi-item {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--muted-surface);
+  padding: 0.8rem;
+}
+
+.kpi-label {
+  margin: 0;
+  color: var(--muted-text);
+  font-size: 0.8rem;
+}
+
+.kpi-value {
+  margin: 0.3rem 0 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* ================================================================
+   RESPONSIVE – Dashboard
+   ================================================================ */
+
+@media (max-width: 1024px) {
+  .card-half {
+    grid-column: span 12;
+  }
+
+  .form-col-1,
+  .form-col-2,
+  .form-col-3,
+  .form-col-4,
+  .form-col-6,
+  .form-col-8 {
+    grid-column: span 12;
+  }
+}
+
+@media (max-width: 860px) {
+  .page {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+  }
+
+  .nav-links {
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .kpi {
+    grid-template-columns: 1fr;
+  }
+}
