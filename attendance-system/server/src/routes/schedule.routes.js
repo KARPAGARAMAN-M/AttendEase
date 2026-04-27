@@ -61,10 +61,10 @@ function mapSchedule(row) {
   };
 }
 
-async function validateTeacherAndSubject(teacherId, subjectId, cseDepartmentId) {
+async function validateTeacherAndSubject(teacherId, subjectId, cseDepartmentId, scheduleYear) {
   const [teacher, subject] = await Promise.all([
     User.findById(teacherId).select("role"),
-    Subject.findById(subjectId).select("department teacher"),
+    Subject.findById(subjectId).select("department teacher year"),
   ]);
 
   if (!teacher || teacher.role !== ROLES.TEACHER) {
@@ -77,6 +77,10 @@ async function validateTeacherAndSubject(teacherId, subjectId, cseDepartmentId) 
 
   if (subject.teacher && subject.teacher.toString() !== teacherId) {
     throw badRequest("teacher_id must match the assigned teacher of the subject");
+  }
+
+  if (Number.isInteger(subject.year) && subject.year !== scheduleYear) {
+    throw badRequest("subject_id year does not match the selected schedule year");
   }
 }
 
@@ -156,7 +160,7 @@ router.post(
     const room = parseRequiredString(req.body?.room, "room");
     const academicYear = parseRequiredString(req.body?.academic_year, "academic_year");
     validateRange(startTime, endTime);
-    await validateTeacherAndSubject(teacherId, subjectId, cseDepartmentId);
+    await validateTeacherAndSubject(teacherId, subjectId, cseDepartmentId, year);
 
     const created = await Schedule.create({
       department: cseDepartmentId,
@@ -204,7 +208,7 @@ router.put(
     const room = parseRequiredString(req.body?.room, "room");
     const academicYear = parseRequiredString(req.body?.academic_year, "academic_year");
     validateRange(startTime, endTime);
-    await validateTeacherAndSubject(teacherId, subjectId, cseDepartmentId);
+    await validateTeacherAndSubject(teacherId, subjectId, cseDepartmentId, year);
 
     schedule.year = year;
     schedule.semester = semester;

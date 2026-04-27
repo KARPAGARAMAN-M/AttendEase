@@ -16,6 +16,7 @@ export default function TeacherDashboard() {
   const [subjects, setSubjects] = useState([]);
   const [markStudents, setMarkStudents] = useState([]);
   const [markStatus, setMarkStatus] = useState({});
+  const [activeSection, setActiveSection] = useState("attendance");
   const [message, setMessage] = useState("");
   const [messageError, setMessageError] = useState(false);
 
@@ -156,20 +157,34 @@ export default function TeacherDashboard() {
   }
 
   const filteredSubjectsForMark = useMemo(() => {
-    if (!markForm.department_id) {
-      return subjects;
-    }
-    return subjects.filter((row) => row.department_id === markForm.department_id);
-  }, [subjects, markForm.department_id]);
+    const selectedYear = Number(markForm.year);
+    return subjects.filter((row) => {
+      const departmentMatches =
+        !markForm.department_id || row.department_id === markForm.department_id;
+      const rowYear = Number(row.year);
+      const yearMatches =
+        !Number.isInteger(selectedYear) || !Number.isInteger(rowYear) || rowYear === selectedYear;
+      return departmentMatches && yearMatches;
+    });
+  }, [subjects, markForm.department_id, markForm.year]);
+  const navLinks = [
+    {
+      key: "attendance",
+      href: "#attendance",
+      label: "Attendance",
+      active: activeSection === "attendance",
+      onClick: () => setActiveSection("attendance"),
+    },
+  ];
 
   return (
     <DashboardLayout
       heading="Teacher Dashboard"
       subtitle="Mark and update student attendance."
-      links={[{ href: "#attendance", label: "Attendance" }]}
+      links={navLinks}
     >
       <div className="card-grid">
-        <section className="card" id="attendance">
+        <section className="card" id="attendance" hidden={activeSection !== "attendance"}>
           <h3>Mark / Update Attendance</h3>
           <form onSubmit={submitAttendance}>
             <div className="form-row">
@@ -194,7 +209,9 @@ export default function TeacherDashboard() {
                 max="4"
                 placeholder="Year"
                 value={markForm.year}
-                onChange={(event) => setMarkForm((prev) => ({ ...prev, year: event.target.value }))}
+                onChange={(event) =>
+                  setMarkForm((prev) => ({ ...prev, year: event.target.value, subject_id: "" }))
+                }
                 required
               />
               <input

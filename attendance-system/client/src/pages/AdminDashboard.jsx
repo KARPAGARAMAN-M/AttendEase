@@ -4,7 +4,7 @@ import { useAuth } from "../AuthContext";
 import { CatalogApi, ScheduleApi, StudentApi } from "../api/services";
 
 const emptyTeacherForm = { username: "", password: "", name: "", email: "" };
-const emptySubjectForm = { name: "", teacher_id: "" };
+const emptySubjectForm = { name: "", year: "", teacher_id: "" };
 const emptyStudentForm = {
   username: "",
   password: "",
@@ -48,6 +48,7 @@ export default function AdminDashboard() {
   const [students, setStudents] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState("overview");
 
   const [teacherForm, setTeacherForm] = useState(emptyTeacherForm);
   const [subjectForm, setSubjectForm] = useState(emptySubjectForm);
@@ -76,9 +77,22 @@ export default function AdminDashboard() {
     [teachers],
   );
   const subjectOptions = useMemo(
-    () => subjects.map((item) => ({ value: item.id, label: item.name })),
+    () =>
+      subjects.map((item) => ({
+        value: item.id,
+        label: item.year ? `${item.name} (Year ${item.year})` : item.name,
+        year: item.year || null,
+      })),
     [subjects],
   );
+  const scheduleSubjectOptions = useMemo(() => {
+    const selectedYear = Number(scheduleForm.year);
+    if (!Number.isInteger(selectedYear)) {
+      return subjectOptions;
+    }
+
+    return subjectOptions.filter((item) => !Number.isInteger(item.year) || item.year === selectedYear);
+  }, [subjectOptions, scheduleForm.year]);
 
   useEffect(() => {
     let mounted = true;
@@ -144,6 +158,7 @@ export default function AdminDashboard() {
     try {
       await CatalogApi.createSubject(token, {
         name: subjectForm.name.trim(),
+        year: Number(subjectForm.year),
         department_id: cseDepartmentId,
         teacher_id: subjectForm.teacher_id,
       });
@@ -264,26 +279,75 @@ export default function AdminDashboard() {
     }
   }
 
+  async function deleteSubject(id) {
+    if (!window.confirm("Delete this subject?")) {
+      return;
+    }
+    try {
+      await CatalogApi.removeSubject(token, id);
+      setSectionMessage("subject", "Subject deleted successfully.");
+      await refreshAll();
+    } catch (error) {
+      setSectionMessage("subject", error.message, true);
+    }
+  }
+
   function resetStudentForm() {
     setEditingStudentId("");
     setStudentForm(emptyStudentForm);
   }
 
+  const navLinks = [
+    {
+      key: "overview",
+      href: "#overview",
+      label: "Department",
+      active: activeSection === "overview",
+      onClick: () => setActiveSection("overview"),
+    },
+    {
+      key: "teachers",
+      href: "#teachers",
+      label: "Teachers",
+      active: activeSection === "teachers",
+      onClick: () => setActiveSection("teachers"),
+    },
+    {
+      key: "subjects",
+      href: "#subjects",
+      label: "Subjects",
+      active: activeSection === "subjects",
+      onClick: () => setActiveSection("subjects"),
+    },
+    {
+      key: "students",
+      href: "#students",
+      label: "Students",
+      active: activeSection === "students",
+      onClick: () => setActiveSection("students"),
+    },
+    {
+      key: "schedules",
+      href: "#schedules",
+      label: "Schedules",
+      active: activeSection === "schedules",
+      onClick: () => setActiveSection("schedules"),
+    },
+  ];
+
   return (
     <DashboardLayout
       heading="Admin Dashboard (CSE)"
       subtitle="Manage users, departments, and system data."
-      links={[
-        { href: "#overview", label: "Department" },
-        { href: "#teachers", label: "Teachers" },
-        { href: "#subjects", label: "Subjects" },
-        { href: "#students", label: "Students" },
-        { href: "#schedules", label: "Schedules" },
-      ]}
+      links={navLinks}
     >
       {loading ? <p>Loading data...</p> : null}
       <div className="card-grid">
-        <section className="card card-half" id="overview">
+        <section
+          className={activeSection === "overview" ? "card" : "card card-half"}
+          id="overview"
+          hidden={activeSection !== "overview"}
+        >
           <h3>Department Configuration</h3>
           <p className="message">Department scope is locked to CSE-only mode.</p>
           <div className="table-wrap">
@@ -306,7 +370,11 @@ export default function AdminDashboard() {
           </div>
         </section>
 
-        <section className="card card-half" id="teachers">
+        <section
+          className={activeSection === "teachers" ? "card" : "card card-half"}
+          id="teachers"
+          hidden={activeSection !== "teachers"}
+        >
           <h3>Teachers</h3>
           <form
             onSubmit={submitTeacher}
@@ -367,7 +435,11 @@ export default function AdminDashboard() {
           </div>
         </section>
 
-        <section className="card card-half" id="subjects">
+        <section
+          className={activeSection === "subjects" ? "card" : "card card-half"}
+          id="subjects"
+          hidden={activeSection !== "subjects"}
+        >
           <h3>Subjects (CSE)</h3>
           <form
             onSubmit={submitSubject}
@@ -376,8 +448,15 @@ export default function AdminDashboard() {
             }
           >
             <div className="form-row">
-              <input className="form-col-5" name="name" value={subjectForm.name} placeholder="Subject name" required />
-              <select className="form-col-4" name="teacher_id" value={subjectForm.teacher_id} required>
+              <input className="form-col-4" name="name" value={subjectForm.name} placeholder="Subject name" required />
+              <select className="form-col-2" name="year" value={subjectForm.year} required>
+                <option value="">Year</option>
+                <option value="1">Year 1</option>
+                <option value="2">Year 2</option>
+                <option value="3">Year 3</option>
+                <option value="4">Year 4</option>
+              </select>
+              <select className="form-col-3" name="teacher_id" value={subjectForm.teacher_id} required>
                 <option value="">Select Teacher</option>
                 {teacherOptions.map((row) => (
                   <option key={row.value} value={row.value}>
@@ -396,16 +475,24 @@ export default function AdminDashboard() {
               <thead>
                 <tr>
                   <th>Subject</th>
+                  <th>Year</th>
                   <th>Department</th>
                   <th>Teacher</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {subjects.map((row) => (
                   <tr key={row.id}>
                     <td>{row.name}</td>
+                    <td>{row.year || "-"}</td>
                     <td>{row.department_name}</td>
                     <td>{row.teacher_name || "Unassigned"}</td>
+                    <td>
+                      <button className="danger" type="button" onClick={() => deleteSubject(row.id)}>
+                        Delete
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -413,7 +500,11 @@ export default function AdminDashboard() {
           </div>
         </section>
 
-        <section className="card card-half" id="students">
+        <section
+          className={activeSection === "students" ? "card" : "card card-half"}
+          id="students"
+          hidden={activeSection !== "students"}
+        >
           <h3>Students (CSE)</h3>
           <form
             onSubmit={submitStudent}
@@ -498,7 +589,7 @@ export default function AdminDashboard() {
           </div>
         </section>
 
-        <section className="card" id="schedules">
+        <section className="card" id="schedules" hidden={activeSection !== "schedules"}>
           <h3>Academic Schedule (CSE)</h3>
           <form onSubmit={submitSchedule}>
             <div className="form-row">
@@ -509,7 +600,13 @@ export default function AdminDashboard() {
                 max="4"
                 placeholder="Year"
                 value={scheduleForm.year}
-                onChange={(event) => setScheduleForm((prev) => ({ ...prev, year: event.target.value }))}
+                onChange={(event) =>
+                  setScheduleForm((prev) => ({
+                    ...prev,
+                    year: event.target.value,
+                    subject_id: "",
+                  }))
+                }
                 required
               />
               <input
@@ -561,7 +658,7 @@ export default function AdminDashboard() {
                 required
               >
                 <option value="">Select Subject</option>
-                {subjectOptions.map((row) => (
+                {scheduleSubjectOptions.map((row) => (
                   <option key={row.value} value={row.value}>
                     {row.label}
                   </option>

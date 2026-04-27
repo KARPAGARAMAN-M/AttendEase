@@ -16,6 +16,7 @@ export const CatalogApi = {
 
   getSubjects: (token, filters = {}) => apiFetch(`/api/subjects${toQuery(filters)}`, { token }),
   createSubject: (token, payload) => apiFetch("/api/subjects", { method: "POST", token, body: payload }),
+  removeSubject: (token, id) => apiFetch(`/api/subjects/${id}`, { method: "DELETE", token }),
 };
 
 export const ScheduleApi = {

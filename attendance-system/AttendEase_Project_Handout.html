@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AttendEase Project Handout</title>
+    <style>
+      :root {
+        --ink: #1f2937;
+        --muted: #5b6472;
+        --line: #d7dde5;
+        --soft: #f5f7fa;
+        --brand: #0f4c81;
+        --brand-deep: #0a3559;
+        --accent: #b8860b;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Segoe UI", Arial, sans-serif;
+        color: var(--ink);
+        background: #eef2f7;
+      }
+
+      .page {
+        width: 210mm;
+        min-height: 297mm;
+        margin: 0 auto;
+        padding: 18mm 16mm;
+        background: #ffffff;
+      }
+
+      .hero {
+        border: 1px solid var(--line);
+        background: linear-gradient(135deg, #f7fbff 0%, #eef4fb 100%);
+        padding: 18px 22px;
+        border-radius: 8px;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        font-size: 11px;
+        letter-spacing: 1.4px;
+        text-transform: uppercase;
+        color: var(--brand);
+        font-weight: 700;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 28px;
+        line-height: 1.15;
+        color: var(--brand-deep);
+      }
+
+      .subtitle {
+        margin: 10px 0 0;
+        font-size: 14px;
+        line-height: 1.6;
+        color: var(--muted);
+      }
+
+      .meta {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 16px;
+      }
+
+      .meta-card {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: #fff;
+        padding: 10px 12px;
+      }
+
+      .meta-label {
+        display: block;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--muted);
+        margin-bottom: 4px;
+      }
+
+      .meta-value {
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .section {
+        margin-top: 18px;
+      }
+
+      .section h2 {
+        margin: 0 0 10px;
+        font-size: 16px;
+        color: var(--brand-deep);
+        border-bottom: 2px solid var(--line);
+        padding-bottom: 6px;
+      }
+
+      p {
+        margin: 0 0 10px;
+        font-size: 13px;
+        line-height: 1.65;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+
+      .panel {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 12px 14px;
+        background: var(--soft);
+      }
+
+      .panel h3 {
+        margin: 0 0 8px;
+        font-size: 14px;
+        color: var(--brand);
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      li {
+        margin: 0 0 6px;
+        font-size: 12.5px;
+        line-height: 1.55;
+      }
+
+      .prompt {
+        border: 1px solid var(--line);
+        border-left: 5px solid var(--accent);
+        background: #fffdf7;
+        border-radius: 6px;
+        padding: 14px 16px;
+        white-space: pre-wrap;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+
+      .footer-note {
+        margin-top: 18px;
+        padding-top: 10px;
+        border-top: 1px solid var(--line);
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      @page {
+        size: A4;
+        margin: 12mm;
+      }
+
+      @media print {
+        body {
+          background: #ffffff;
+        }
+
+        .page {
+          width: auto;
+          min-height: auto;
+          margin: 0;
+          padding: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <section class="hero">
+        <p class="eyebrow">Project Handout</p>
+        <h1>AttendEase</h1>
+        <p class="subtitle">
+          A role-based college attendance management system built with the MERN stack for
+          The Kavery Engineering College (Autonomous), Mecheri. This handout summarizes the
+          project scope, system modules, technical architecture, and the professional build prompt.
+        </p>
+        <div class="meta">
+          <div class="meta-card">
+            <span class="meta-label">Category</span>
+            <span class="meta-value">College ERP / Attendance Portal</span>
+          </div>
+          <div class="meta-card">
+            <span class="meta-label">Stack</span>
+            <span class="meta-value">MongoDB, Express, React, Node.js</span>
+          </div>
+          <div class="meta-card">
+            <span class="meta-label">Release Context</span>
+            <span class="meta-value">CSE Department Focused Build</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Project Overview</h2>
+        <p>
+          AttendEase is a secure academic attendance platform that centralizes student attendance,
+          subject management, schedules, and reporting across multiple user roles. It is designed
+          to give administrators full operational control, allow teachers to mark and update
+          attendance efficiently, provide students with transparent attendance visibility, and help
+          HOD or Principal users monitor compliance through summary reports.
+        </p>
+      </section>
+
+      <section class="section">
+        <h2>Role Modules</h2>
+        <div class="grid">
+          <div class="panel">
+            <h3>Admin</h3>
+            <ul>
+              <li>Manage teachers, subjects, students, and schedules</li>
+              <li>Maintain CSE-only department configuration</li>
+              <li>Handle student create, edit, and delete operations</li>
+              <li>Assign faculty to subjects and academic timetables</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Teacher</h3>
+            <ul>
+              <li>Load students by department, year, semester, and section</li>
+              <li>Mark attendance as Present, Absent, or Late</li>
+              <li>Use bulk actions and keyboard shortcuts for speed</li>
+              <li>Update attendance records for the same class date</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Student</h3>
+            <ul>
+              <li>View profile and personal attendance percentage</li>
+              <li>Track subject-wise attendance performance</li>
+              <li>Identify low attendance below the 75% threshold</li>
+              <li>Refresh live report data from the system</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>HOD / Principal</h3>
+            <ul>
+              <li>Monitor overall monthly attendance reports</li>
+              <li>Review subject-wise and semester-wise summaries</li>
+              <li>Detect low-compliance classes and trends</li>
+              <li>Use management-facing attendance tables for review</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>System Architecture</h2>
+        <div class="grid">
+          <div class="panel">
+            <h3>Frontend</h3>
+            <ul>
+              <li>React 18 with Vite and React Router</li>
+              <li>Welcome page, role selection, login flow, protected dashboards</li>
+              <li>Reusable dashboard layout and API service layer</li>
+              <li>Session persistence using localStorage</li>
+            </ul>
+          </div>
+          <div class="panel">
+            <h3>Backend</h3>
+            <ul>
+              <li>Express API with MongoDB and Mongoose</li>
+              <li>JWT authentication and bcrypt password hashing</li>
+              <li>Role-based middleware and centralized error handling</li>
+              <li>Attendance, reports, schedules, notifications, and requests APIs</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Key Functional Expectations</h2>
+        <ul>
+          <li>JWT-based login with role validation and protected route access.</li>
+          <li>Attendance percentage calculation where Present and Late count as attended.</li>
+          <li>Duplicate prevention for the same student, subject, and date.</li>
+          <li>Monthly reporting and low-attendance monitoring below 75%.</li>
+          <li>PDF and Excel export support for management reports.</li>
+          <li>Professional academic UI suitable for institutional daily use.</li>
+        </ul>
+      </section>
+
+      <section class="section">
+        <h2>Professional Development Prompt</h2>
+        <div class="prompt">Build a full-stack web application called "AttendEase", a professional college attendance management system for The Kavery Engineering College (Autonomous), Mecheri, using the MERN stack: MongoDB, Express.js, React.js with Vite, and Node.js.
+
+Create a secure, role-based platform that supports Admin, Teacher, Student, and HOD / Principal users. The system must include a college-branded welcome page, role-selection login flow, protected dashboards, and session persistence using localStorage.
+
+Admin features must include CSE-only department management, teacher management, subject assignment, student CRUD operations, and academic schedule management. Teacher features must include filtered student loading, attendance marking, status updates, bulk marking, and keyboard shortcuts. Student features must include profile view, overall attendance percentage, subject-wise summary, and low-attendance highlighting below 75%. HOD / Principal features must include monthly overall attendance reporting, subject-wise summaries, semester-wise summaries, and management-ready report tables.
+
+Implement the backend with Express.js and MongoDB using models for User, Student, Department, Subject, Attendance, Schedule, Notification, and AttendanceRequest. Add JWT authentication, bcrypt password hashing, role-based authorization, centralized error handling, and REST APIs for login, profile, catalog data, student management, attendance, reports, schedules, notifications, and institutional management.
+
+Use a clean, responsive academic interface with structured navigation, reliable validation, reusable frontend service helpers, and a maintainable project structure. The final system should feel secure, professional, practical, and deployment-ready for college attendance operations.</div>
+      </section>
+
+      <section class="section">
+        <h2>Deliverables</h2>
+        <ul>
+          <li>Complete frontend and backend implementation</li>
+          <li>MongoDB schema and API structure</li>
+          <li>Role-based login and dashboard workflow</li>
+          <li>Attendance marking, tracking, and reporting modules</li>
+          <li>Printable documentation and project setup instructions</li>
+        </ul>
+      </section>
+
+      <p class="footer-note">
+        Prepared from the current AttendEase codebase and project documentation on 25 April 2026.
+      </p>
+    </main>
+  </body>
+</html>

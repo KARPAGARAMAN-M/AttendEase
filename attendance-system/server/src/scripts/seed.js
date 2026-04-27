@@ -54,11 +54,11 @@ const TEACHER_SEED = [
 ];
 
 const SUBJECT_SEED = [
-  { name: "Data Structures", teacherUsername: "teacher.cse" },
-  { name: "Database Management Systems", teacherUsername: "teacher.cse.dbms" },
-  { name: "Operating Systems", teacherUsername: "teacher.cse.os" },
-  { name: "Artificial Intelligence", teacherUsername: "teacher.cse.ai" },
-  { name: "Computer Networks", teacherUsername: "teacher.cse.cn" },
+  { name: "Data Structures", teacherUsername: "teacher.cse", year: 2 },
+  { name: "Database Management Systems", teacherUsername: "teacher.cse.dbms", year: 2 },
+  { name: "Operating Systems", teacherUsername: "teacher.cse.os", year: 2 },
+  { name: "Artificial Intelligence", teacherUsername: "teacher.cse.ai", year: 2 },
+  { name: "Computer Networks", teacherUsername: "teacher.cse.cn", year: 2 },
 ];
 
 const FIRST_NAMES = [
@@ -176,6 +176,7 @@ async function run() {
       name: item.name,
       department: department._id,
       teacher: userByUsername.get(item.teacherUsername)._id,
+      year: item.year,
     })),
   );
 

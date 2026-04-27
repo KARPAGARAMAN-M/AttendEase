@@ -1,14 +1,21 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useAuth } from "../AuthContext";
 
 export default function WelcomePage() {
   const navigate = useNavigate();
+  const { logout } = useAuth();
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setLoaded(true), 100);
     return () => clearTimeout(timer);
   }, []);
+
+  function selectRole(roleParam) {
+    logout();
+    navigate(`/login?role=${roleParam}`, { replace: true });
+  }
 
   return (
     <div className={`welcome-wrapper ${loaded ? "welcome-loaded" : ""}`}>
@@ -73,7 +80,7 @@ export default function WelcomePage() {
             type="button"
             className="welcome-user-card role-admin"
             id="role-card-admin"
-            onClick={() => navigate("/login?role=Admin", { replace: true })}
+            onClick={() => selectRole("Admin")}
           >
             <div className="role-card-icon-wrap role-admin-bg">
               <span className="role-card-icon">🛡️</span>
@@ -90,7 +97,7 @@ export default function WelcomePage() {
             type="button"
             className="welcome-user-card role-teacher"
             id="role-card-teacher"
-            onClick={() => navigate("/login?role=Teacher", { replace: true })}
+            onClick={() => selectRole("Teacher")}
           >
             <div className="role-card-icon-wrap role-teacher-bg">
               <span className="role-card-icon">👩‍🏫</span>
@@ -107,7 +114,7 @@ export default function WelcomePage() {
             type="button"
             className="welcome-user-card role-student"
             id="role-card-student"
-            onClick={() => navigate("/login?role=Student", { replace: true })}
+            onClick={() => selectRole("Student")}
           >
             <div className="role-card-icon-wrap role-student-bg">
               <span className="role-card-icon">🎓</span>
@@ -124,7 +131,7 @@ export default function WelcomePage() {
             type="button"
             className="welcome-user-card role-hod"
             id="role-card-hod"
-            onClick={() => navigate("/login?role=HOD%20/%20Principal", { replace: true })}
+            onClick={() => selectRole("HOD%20/%20Principal")}
           >
             <div className="role-card-icon-wrap role-hod-bg">
               <span className="role-card-icon">🧑‍💼</span>

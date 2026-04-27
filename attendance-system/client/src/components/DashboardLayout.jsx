@@ -18,11 +18,24 @@ export default function DashboardLayout({ heading, subtitle, links = [], childre
           {user?.name} ({user?.role})
         </p>
         <div className="nav-links">
-          {links.map((item) => (
-            <a key={item.href} href={item.href}>
-              {item.label}
-            </a>
-          ))}
+          {links.map((item) => {
+            const key = item.key || item.href || item.label;
+            const className = item.active ? "active" : "";
+
+            if (item.onClick) {
+              return (
+                <button key={key} type="button" className={className} onClick={item.onClick}>
+                  {item.label}
+                </button>
+              );
+            }
+
+            return (
+              <a key={key} href={item.href} className={className}>
+                {item.label}
+              </a>
+            );
+          })}
         </div>
         <div style={{ marginTop: "1rem" }}>
           <button className="danger" onClick={handleLogout} type="button">

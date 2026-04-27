@@ -31,6 +31,7 @@ export default function HodDashboard() {
   const [monthlyRows, setMonthlyRows] = useState([]);
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
+  const [activeSection, setActiveSection] = useState("overall");
   const [filters, setFilters] = useState({
     department_id: "",
     month: new Date().toISOString().slice(0, 7),
@@ -45,7 +46,6 @@ export default function HodDashboard() {
           return;
         }
         setDepartments(departmentData);
-        await loadMonthly();
       } catch (error) {
         setMessage(error.message);
         setIsError(true);
@@ -57,6 +57,10 @@ export default function HodDashboard() {
       mounted = false;
     };
   }, [token]);
+
+  useEffect(() => {
+    loadMonthly();
+  }, [token, filters.department_id, filters.month]);
 
   async function loadMonthly() {
     try {
@@ -78,127 +82,150 @@ export default function HodDashboard() {
     () => summarize(monthlyRows, (row) => `${row.year}/${row.semester}`),
     [monthlyRows],
   );
+  const navLinks = [
+    {
+      key: "overall",
+      href: "#overall",
+      label: "Overall Report",
+      active: activeSection === "overall",
+      onClick: () => setActiveSection("overall"),
+    },
+    {
+      key: "subjectSummary",
+      href: "#subjectSummary",
+      label: "Subject Summary",
+      active: activeSection === "subjectSummary",
+      onClick: () => setActiveSection("subjectSummary"),
+    },
+    {
+      key: "semesterSummary",
+      href: "#semesterSummary",
+      label: "Semester Summary",
+      active: activeSection === "semesterSummary",
+      onClick: () => setActiveSection("semesterSummary"),
+    },
+  ];
 
   return (
     <DashboardLayout
       heading="HOD / Principal Dashboard"
       subtitle="View overall attendance reports."
-      links={[
-        { href: "#overall", label: "Overall Report" },
-        { href: "#subjectSummary", label: "Subject Summary" },
-        { href: "#semesterSummary", label: "Semester Summary" },
-      ]}
+      links={navLinks}
     >
       <div className="card-grid">
-        <section className="card" id="overall">
-          <h3>Overall Department Attendance Report</h3>
-          <div className="form-row">
-            <select
-              className="form-col-4"
-              value={filters.department_id}
-              onChange={(event) => setFilters((prev) => ({ ...prev, department_id: event.target.value }))}
-            >
-              <option value="">CSE Department</option>
-              {departments.map((row) => (
-                <option key={row.id} value={row.id}>
-                  {row.name}
-                </option>
-              ))}
-            </select>
-            <input
-              className="form-col-4"
-              type="month"
-              value={filters.month}
-              onChange={(event) => setFilters((prev) => ({ ...prev, month: event.target.value }))}
-            />
-            <button className="form-col-4" type="button" onClick={loadMonthly}>
-              Load Report
-            </button>
-          </div>
-          <p className={`message ${isError ? "error" : "success"}`}>{message}</p>
-          <div className="table-wrap" style={{ marginTop: "0.9rem" }}>
-            <table>
-              <thead>
-                <tr>
-                  <th>Department</th>
-                  <th>Year/Sem</th>
-                  <th>Section</th>
-                  <th>Subject</th>
-                  <th>Total</th>
-                  <th>Attended</th>
-                  <th>Percentage</th>
-                </tr>
-              </thead>
-              <tbody>
-                {monthlyRows.map((row) => (
-                  <tr key={`${row.department_id}-${row.year}-${row.semester}-${row.section}-${row.subject_id}`}>
-                    <td>{row.department_name}</td>
-                    <td>
-                      {row.year}/{row.semester}
-                    </td>
-                    <td>{row.section}</td>
-                    <td>{row.subject_name}</td>
-                    <td>{row.total_classes}</td>
-                    <td>{row.attended_classes}</td>
-                    <td className={pctClass(row.percentage)}>{row.percentage}%</td>
-                  </tr>
+        {activeSection === "overall" ? (
+          <section className="card" id="overall">
+            <h3>Overall Department Attendance Report</h3>
+            <div className="form-row">
+              <select
+                className="form-col-4"
+                value={filters.department_id}
+                onChange={(event) => setFilters((prev) => ({ ...prev, department_id: event.target.value }))}
+              >
+                <option value="">CSE Department</option>
+                {departments.map((row) => (
+                  <option key={row.id} value={row.id}>
+                    {row.name}
+                  </option>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+              </select>
+              <input
+                className="form-col-4"
+                type="month"
+                value={filters.month}
+                onChange={(event) => setFilters((prev) => ({ ...prev, month: event.target.value }))}
+              />
+              <div className="form-col-4 message">Report updates automatically.</div>
+            </div>
+            <p className={`message ${isError ? "error" : "success"}`}>{message}</p>
+            <div className="table-wrap" style={{ marginTop: "0.9rem" }}>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Department</th>
+                    <th>Year/Sem</th>
+                    <th>Section</th>
+                    <th>Subject</th>
+                    <th>Total</th>
+                    <th>Attended</th>
+                    <th>Percentage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {monthlyRows.map((row) => (
+                    <tr key={`${row.department_id}-${row.year}-${row.semester}-${row.section}-${row.subject_id}`}>
+                      <td>{row.department_name}</td>
+                      <td>
+                        {row.year}/{row.semester}
+                      </td>
+                      <td>{row.section}</td>
+                      <td>{row.subject_name}</td>
+                      <td>{row.total_classes}</td>
+                      <td>{row.attended_classes}</td>
+                      <td className={pctClass(row.percentage)}>{row.percentage}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        ) : null}
 
-        <section className="card card-half" id="subjectSummary">
-          <h3>Subject-wise Overall</h3>
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Subject</th>
-                  <th>Total</th>
-                  <th>Attended</th>
-                  <th>Percentage</th>
-                </tr>
-              </thead>
-              <tbody>
-                {subjectSummary.map((row) => (
-                  <tr key={row.key}>
-                    <td>{row.key}</td>
-                    <td>{row.total}</td>
-                    <td>{row.attended}</td>
-                    <td className={pctClass(row.percentage)}>{row.percentage}%</td>
+        {activeSection === "subjectSummary" ? (
+          <section className="card" id="subjectSummary">
+            <h3>Subject-wise Overall</h3>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Subject</th>
+                    <th>Total</th>
+                    <th>Attended</th>
+                    <th>Percentage</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+                </thead>
+                <tbody>
+                  {subjectSummary.map((row) => (
+                    <tr key={row.key}>
+                      <td>{row.key}</td>
+                      <td>{row.total}</td>
+                      <td>{row.attended}</td>
+                      <td className={pctClass(row.percentage)}>{row.percentage}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        ) : null}
 
-        <section className="card card-half" id="semesterSummary">
-          <h3>Semester-wise Overall</h3>
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Year/Sem</th>
-                  <th>Total</th>
-                  <th>Attended</th>
-                  <th>Percentage</th>
-                </tr>
-              </thead>
-              <tbody>
-                {semesterSummary.map((row) => (
-                  <tr key={row.key}>
-                    <td>{row.key}</td>
-                    <td>{row.total}</td>
-                    <td>{row.attended}</td>
-                    <td className={pctClass(row.percentage)}>{row.percentage}%</td>
+        {activeSection === "semesterSummary" ? (
+          <section className="card" id="semesterSummary">
+            <h3>Semester-wise Overall</h3>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Year/Sem</th>
+                    <th>Total</th>
+                    <th>Attended</th>
+                    <th>Percentage</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+                </thead>
+                <tbody>
+                  {semesterSummary.map((row) => (
+                    <tr key={row.key}>
+                      <td>{row.key}</td>
+                      <td>{row.total}</td>
+                      <td>{row.attended}</td>
+                      <td className={pctClass(row.percentage)}>{row.percentage}%</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        ) : null}
       </div>
     </DashboardLayout>
   );

@@ -1,4 +1,4 @@
-import { Navigate, Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 import { rolePath } from "./auth";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -11,6 +11,14 @@ import WelcomePage from "./pages/WelcomePage";
 
 function LoginRoute() {
   const { isAuthenticated, user } = useAuth();
+  const location = useLocation();
+  const hasSelectedRole = new URLSearchParams(location.search).has("role");
+
+  // When user selected a role from welcome page, always show login form.
+  if (hasSelectedRole) {
+    return <LoginPage />;
+  }
+
   if (isAuthenticated && user) {
     return <Navigate to={rolePath(user.role)} replace />;
   }

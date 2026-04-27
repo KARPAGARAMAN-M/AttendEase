@@ -5,6 +5,7 @@ import { ReportApi } from "../api/services";
 
 export default function StudentDashboard() {
   const { token, user } = useAuth();
+  const [activeSection, setActiveSection] = useState("profile");
   const [report, setReport] = useState({
     overall: { total_classes: 0, attended_classes: 0, percentage: 0 },
     subject_summary: [],
@@ -26,14 +27,28 @@ export default function StudentDashboard() {
     loadReport();
   }, [token]);
 
+  const navLinks = [
+    {
+      key: "profile",
+      href: "#profile",
+      label: "Profile",
+      active: activeSection === "profile",
+      onClick: () => setActiveSection("profile"),
+    },
+    {
+      key: "attendance",
+      href: "#attendance",
+      label: "Attendance %",
+      active: activeSection === "attendance",
+      onClick: () => setActiveSection("attendance"),
+    },
+  ];
+
   return (
     <DashboardLayout
       heading="Student Dashboard"
       subtitle="View profile and attendance percentage."
-      links={[
-        { href: "#profile", label: "Profile" },
-        { href: "#attendance", label: "Attendance %" },
-      ]}
+      links={navLinks}
     >
       <div className="topbar" style={{ marginTop: "-0.4rem" }}>
         <button className="light" type="button" onClick={loadReport}>
@@ -43,7 +58,11 @@ export default function StudentDashboard() {
       {error ? <p className="message error">{error}</p> : null}
 
       <div className="card-grid">
-        <section className="card card-half" id="profile">
+        <section
+          className={activeSection === "profile" ? "card" : "card card-half"}
+          id="profile"
+          hidden={activeSection !== "profile"}
+        >
           <h3>My Profile</h3>
           <div className="table-wrap">
             <table>
@@ -69,7 +88,11 @@ export default function StudentDashboard() {
           </div>
         </section>
 
-        <section className="card card-half" id="attendance">
+        <section
+          className={activeSection === "attendance" ? "card" : "card card-half"}
+          id="attendance"
+          hidden={activeSection !== "attendance"}
+        >
           <h3>Attendance Percentage</h3>
           <div className="kpi">
             <div className="kpi-item">
@@ -87,6 +110,7 @@ export default function StudentDashboard() {
               </p>
             </div>
           </div>
+
           <div className="table-wrap" style={{ marginTop: "0.9rem" }}>
             <table>
               <thead>
