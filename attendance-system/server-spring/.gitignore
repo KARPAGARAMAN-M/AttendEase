@@ -1,0 +1,32 @@
+.idea/
+*.iml
+target/
+*.class
+*.jar
+*.war
+*.rar
+*.zip
+*.tar.gz
+
+# IDE
+.vscode/
+.settings/
+.classpath
+.project
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Database
+*.sql.backup
+
+# OS
+.DS_Store
+Thumbs.db
