@@ -7,3 +7,4 @@ client/.env
 npm-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+tools/

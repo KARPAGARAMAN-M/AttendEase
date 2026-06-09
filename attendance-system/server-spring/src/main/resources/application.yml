@@ -5,7 +5,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/attendease?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
-    password: ${DB_PASSWORD:root}
+    password: ${DB_PASSWORD:mkr@1605}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -39,7 +39,7 @@ server:
     context-path: /api
 
 jwt:
-  secret: ${JWT_SECRET:your-secret-key-change-in-production-very-important}
+  secret: ${JWT_SECRET:your-secret-key-change-in-production-very-important-and-must-be-at-least-64-characters}
   expiration: ${JWT_EXPIRATION:43200000}
 
 logging:

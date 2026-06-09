@@ -32,10 +32,7 @@ public class AuthService {
 
         return LoginResponse.builder()
                 .token(token)
-                .username(user.getUsername())
-                .role(user.getRole())
-                .name(user.getName())
-                .id(user.getId())
+                .user(toUserDTO(user))
                 .build();
     }
 
